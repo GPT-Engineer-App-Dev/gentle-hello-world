@@ -90,8 +90,6 @@ export const useDeleteAnimal = () => {
     });
 };
 
-
-
 // Hooks for Drink table
 export const useDrinks = () => useQuery({
     queryKey: ['drinks'],
@@ -130,6 +128,48 @@ export const useDeleteDrink = () => {
         mutationFn: (id) => fromSupabase(supabase.from('drinks').delete().eq('id', id)),
         onSuccess: () => {
             queryClient.invalidateQueries('drinks');
+        },
+    });
+};
+
+// Hooks for Dish table
+export const useDishes = () => useQuery({
+    queryKey: ['dishes'],
+    queryFn: () => fromSupabase(supabase.from('dishes').select('*')),
+});
+
+export const useDish = (id) => useQuery({
+    queryKey: ['dish', id],
+    queryFn: () => fromSupabase(supabase.from('dishes').select('*').eq('id', id).single()),
+});
+
+export const useAddDish = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newDish) => fromSupabase(supabase.from('dishes').insert([newDish])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('dishes');
+        },
+    });
+};
+
+export const useUpdateDish = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedDish) => fromSupabase(supabase.from('dishes').update(updatedDish).eq('id', updatedDish.id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('dishes');
+            queryClient.invalidateQueries(['dish', updatedDish.id]);
+        },
+    });
+};
+
+export const useDeleteDish = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('dishes').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('dishes');
         },
     });
 };
